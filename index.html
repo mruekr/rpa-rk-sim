@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>dinoMountain GmbH - Reisekosten Login</title>
+	<div style="text-align: center; margin-bottom: 20px;">
+        <img src="dinomountain.png" id="erp-logo" alt="Unternehmenslogo" style="max-width: 120px; height: auto;">
+    </div>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; }
+        h2 { color: #1a73e8; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .link { text-align: center; margin-top: 15px; font-size: 0.9em; color: #666; cursor: pointer; text-decoration: underline; }
+        #erp-interface { display: none; }
+        .msg { padding: 10px; margin-top: 10px; border-radius: 6px; display: none; text-align: center; }
+        .error { background: #fce8e6; color: #c5221f; }
+        .success { background: #e6f4ea; color: #137333; }
+    </style>
+</head>
+<body>
+
+<div id="auth-box" class="box">
+    <h2 id="auth-title">Reisekosten Login</h2>
+	<div style="text-align: center; margin-bottom: 20px;">
+        <img src="dinomountain.png" id="erp-logo" alt="Unternehmenslogo" style="max-width: 120px; height: auto;">
+    </div>
+    <input type="text" id="username" placeholder="Benutzername">
+    <input type="password" id="password" placeholder="Passwort">
+    <button id="auth-btn" onclick="handleAuth()">Einloggen</button>
+    <div id="auth-msg" class="msg error"></div>
+    <div class="link" onclick="toggleAuth()" id="toggle-link">Noch keinen Account? Registrieren</div>
+</div>
+
+<div id="erp-interface" class="box" style="width: 450px;">
+    <h2>Reisekosten-Erfassung</h2>
+	<div style="text-align: center; margin-bottom: 20px;">
+        <img src="dinomountain.png" id="erp-logo" alt="Unternehmenslogo" style="max-width: 120px; height: auto;">
+    </div>
+
+    <input type="text" id="employee" placeholder="Mitarbeiter Name">
+    <input type="text" id="costCenter" placeholder="Kostenstelle">
+    <input type="number" id="amount" placeholder="Betrag in €">
+    <input type="text" id="invoiceRef" placeholder="Beleg-Referenz">
+    <button onclick="processBooking()">Buchung abschließen</button>
+    <div id="statusMessage" class="msg"></div>
+    <div class="link" onclick="location.reload()">Abmelden</div>
+</div>
+
+<script>
+    let isLoginMode = true;
+
+    function toggleAuth() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-title').innerText = isLoginMode ? "ERP Login" : "Registrierung";
+        document.getElementById('auth-btn').innerText = isLoginMode ? "Einloggen" : "Account erstellen";
+        document.getElementById('toggle-link').innerText = isLoginMode ? "Noch keinen Account? Registrieren" : "Zurück zum Login";
+    }
+
+    function handleAuth() {
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const msg = document.getElementById('auth-msg');
+
+        if(!u || !p) { showMsg(msg, "Bitte Felder ausfüllen", "error"); return; }
+
+        if (isLoginMode) {
+            const storedPass = localStorage.getItem("user_" + u);
+            if (storedPass === p) {
+                document.getElementById('auth-box').style.display = 'none';
+                document.getElementById('erp-interface').style.display = 'block';
+            } else {
+                showMsg(msg, "Login fehlgeschlagen!", "error");
+            }
+        } else {
+            localStorage.setItem("user_" + u, p);
+            showMsg(msg, "Registrierung erfolgreich! Bitte einloggen.", "success");
+            toggleAuth();
+        }
+    }
+
+    function processBooking() {
+        const msg = document.getElementById('statusMessage');
+        const fields = ['employee', 'costCenter', 'amount', 'invoiceRef'];
+        if (fields.some(id => !document.getElementById(id).value)) {
+            showMsg(msg, "Fehler: Alle Felder befüllen!", "error");
+        } else {
+            const id = Math.floor(Math.random() * 900000) + 100000;
+            showMsg(msg, "Reisekostenabrechnung " + id + " erfolgreich erstellt", "success");
+            fields.forEach(f => document.getElementById(f).value = '');
+        }
+    }
+
+    function showMsg(el, txt, type) {
+        el.innerText = txt;
+        el.className = "msg " + type;
+        el.style.display = "block";
+    }
+</script>
+</body>
+</html>
