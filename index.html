@@ -2,93 +2,138 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>dinoMountain GmbH - Reisekosten Login</title>
-	<div style="text-align: center; margin-bottom: 20px;">
-        <img src="dinomountain.png" id="erp-logo" alt="Unternehmenslogo" style="max-width: 120px; height: auto;">
-    </div>
+    <title>dinoMountain GmbH - Reisekosten System</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; }
-        h2 { color: #1a73e8; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; transition: all 0.3s ease; }
+        h2 { color: #1a73e8; text-align: center; margin-top: 10px; }
+        
+        /* Logo Styling */
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        input:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 5px rgba(26,115,232,0.3); }
+        
+        button { width: 100%; padding: 12px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #1557b0; }
+        
         .link { text-align: center; margin-top: 15px; font-size: 0.9em; color: #666; cursor: pointer; text-decoration: underline; }
-        #erp-interface { display: none; }
-        .msg { padding: 10px; margin-top: 10px; border-radius: 6px; display: none; text-align: center; }
-        .error { background: #fce8e6; color: #c5221f; }
-        .success { background: #e6f4ea; color: #137333; }
+        .msg { padding: 12px; margin-top: 15px; border-radius: 6px; display: none; text-align: center; font-weight: 500; }
+        .error { background: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
+        .success { background: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
+
+        /* Verstecken des ERP Bereichs am Anfang */
+        #erp-interface { display: none; width: 450px; }
     </style>
 </head>
 <body>
 
 <div id="auth-box" class="box">
-    <h2 id="auth-title">Reisekosten Login</h2>
-	<div style="text-align: center; margin-bottom: 20px;">
-        <img src="dinomountain.png" id="erp-logo" alt="Unternehmenslogo" style="max-width: 120px; height: auto;">
+    <div class="logo-container">
+        <img src="dinomountain.jpg" id="erp-logo" alt="DinoMountain Logo" style="max-width: 180px; height: auto; border-radius: 8px; margin-bottom: 10px;">
     </div>
-    <input type="text" id="username" placeholder="Benutzername">
+	
+    <h2 id="auth-title">Reisekosten Login</h2>
+    
+    <input type="text" id="username" placeholder="Benutzername (für Bot)">
     <input type="password" id="password" placeholder="Passwort">
+    
     <button id="auth-btn" onclick="handleAuth()">Einloggen</button>
-    <div id="auth-msg" class="msg error"></div>
-    <div class="link" onclick="toggleAuth()" id="toggle-link">Noch keinen Account? Registrieren</div>
+    
+    <div id="auth-msg" class="msg"></div>
+    <div class="link" onclick="toggleAuth()" id="toggle-link">Noch keinen Account? Hier registrieren</div>
 </div>
 
-<div id="erp-interface" class="box" style="width: 450px;">
+<div id="erp-interface" class="box">
     <h2>Reisekosten-Erfassung</h2>
-	<div style="text-align: center; margin-bottom: 20px;">
-        <img src="dinomountain.png" id="erp-logo" alt="Unternehmenslogo" style="max-width: 120px; height: auto;">
-    </div>
+    <p style="text-align:center; color: #666; font-size: 0.9em;">System-Status: Bereit für Buchungen</p>
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
 
-    <input type="text" id="employee" placeholder="Mitarbeiter Name">
-    <input type="text" id="costCenter" placeholder="Kostenstelle">
-    <input type="number" id="amount" placeholder="Betrag in €">
-    <input type="text" id="invoiceRef" placeholder="Beleg-Referenz">
-    <button onclick="processBooking()">Buchung abschließen</button>
+    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Mitarbeiter Name</label>
+    <input type="text" id="employee" placeholder="z.B. Max Mustermann">
+    
+    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Kostenstelle</label>
+    <input type="text" id="costCenter" placeholder="z.B. 100-SALES">
+    
+    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Kategorie</label>
+    <select id="category">
+        <option value="">-- Bitte wählen --</option>
+        <option value="Hotel">Hotel</option>
+        <option value="Flug">Flug</option>
+        <option value="Verpflegung">Verpflegung</option>
+        <option value="Taxi">Taxi</option>
+    </select>
+    
+    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Betrag (€)</label>
+    <input type="number" id="amount" step="0.01" placeholder="0,00">
+    
+    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Beleg-Referenz</label>
+    <input type="text" id="invoiceRef" placeholder="RE-2026-XXXX">
+
+    <button id="btnSubmit" onclick="processBooking()">Buchung abschließen</button>
+    
     <div id="statusMessage" class="msg"></div>
-    <div class="link" onclick="location.reload()">Abmelden</div>
+    
+    <div class="link" onclick="location.reload()" style="color: #c5221f;">Abmelden / System sperren</div>
 </div>
 
 <script>
     let isLoginMode = true;
 
+    // Wechsel zwischen Login und Registrierung
     function toggleAuth() {
         isLoginMode = !isLoginMode;
         document.getElementById('auth-title').innerText = isLoginMode ? "ERP Login" : "Registrierung";
         document.getElementById('auth-btn').innerText = isLoginMode ? "Einloggen" : "Account erstellen";
-        document.getElementById('toggle-link').innerText = isLoginMode ? "Noch keinen Account? Registrieren" : "Zurück zum Login";
+        document.getElementById('toggle-link').innerText = isLoginMode ? "Noch keinen Account? Hier registrieren" : "Zurück zum Login";
+        document.getElementById('auth-msg').style.display = 'none';
     }
 
+    // Authentifizierung logik
     function handleAuth() {
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
         const msg = document.getElementById('auth-msg');
 
-        if(!u || !p) { showMsg(msg, "Bitte Felder ausfüllen", "error"); return; }
+        if(!u || !p) { 
+            showMsg(msg, "Fehler: Felder dürfen nicht leer sein!", "error"); 
+            return; 
+        }
 
         if (isLoginMode) {
+            // Login: Check gegen LocalStorage
             const storedPass = localStorage.getItem("user_" + u);
             if (storedPass === p) {
                 document.getElementById('auth-box').style.display = 'none';
                 document.getElementById('erp-interface').style.display = 'block';
             } else {
-                showMsg(msg, "Login fehlgeschlagen!", "error");
+                showMsg(msg, "Login fehlgeschlagen: User unbekannt oder Passwort falsch!", "error");
             }
         } else {
+            // Registrierung: Speichern im LocalStorage
             localStorage.setItem("user_" + u, p);
-            showMsg(msg, "Registrierung erfolgreich! Bitte einloggen.", "success");
+            showMsg(msg, "Account erstellt! Bitte jetzt einloggen.", "success");
             toggleAuth();
         }
     }
 
+    // Buchungslogik
     function processBooking() {
         const msg = document.getElementById('statusMessage');
-        const fields = ['employee', 'costCenter', 'amount', 'invoiceRef'];
-        if (fields.some(id => !document.getElementById(id).value)) {
-            showMsg(msg, "Fehler: Alle Felder befüllen!", "error");
+        const fields = ['employee', 'costCenter', 'category', 'amount', 'invoiceRef'];
+        
+        // Prüfung auf Vollständigkeit
+        const allFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
+
+        if (!allFilled) {
+            showMsg(msg, "ACHTUNG: Buchung unvollständig. Alle Felder sind Pflicht!", "error");
         } else {
-            const id = Math.floor(Math.random() * 900000) + 100000;
-            showMsg(msg, "Reisekostenabrechnung " + id + " erfolgreich erstellt", "success");
-            fields.forEach(f => document.getElementById(f).value = '');
+            // Erfolg: Generiere Zufalls-ID für den Bot zum Auslesen
+            const randomID = Math.floor(Math.random() * 900000) + 100000;
+            showMsg(msg, "Reisekostenabrechnung " + randomID + " erfolgreich erstellt", "success");
+            
+            // Felder leeren für nächste Buchung
+            fields.forEach(id => document.getElementById(id).value = '');
         }
     }
 
@@ -98,5 +143,6 @@
         el.style.display = "block";
     }
 </script>
+
 </body>
 </html>
