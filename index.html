@@ -125,35 +125,37 @@
         const msg = document.getElementById('statusMessage');
         const fields = ['employee', 'costCenter', 'category', 'amount', "currency", 'invoiceRef'];
         
-        // Prüfung auf Vollständigkeit
+        // --- NEU: Variablen definieren, damit sie unten geprüft werden können ---
+        const curr = document.getElementById('currency').value.trim();
+        const amt = document.getElementById('amount').value.trim();
+        
+        // 1. Prüfung auf Vollständigkeit
         const allFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
 
         if (!allFilled) {
             showMsg(msg, "ACHTUNG: Buchung unvollständig. Alle Felder sind Pflicht!", "error");
-			return;
+            return; // Stoppt die Funktion hier
         } 
-		
-		// 2. Prüfung Währung (Nur EUR)
+        
+        // 2. Prüfung Währung (Nur EUR)
         if (curr !== "EUR") {
             showMsg(msg, "Fehler: Das System akzeptiert nur die Währung EUR!", "error");
-            return;
+            return; // Stoppt die Funktion hier
         }
 
         // 3. Prüfung Betrag (Deutsches Format: Zahlen, genau ein Komma optional, keine Punkte)
-        // RegEx: Erlaubt Ziffern, optional ein Komma gefolgt von Ziffern. Keine Punkte erlaubt.
         const germanFormatRegex = /^\d+(,\d{1,2})?$/;
         if (!germanFormatRegex.test(amt)) {
             showMsg(msg, "Fehler: Betrag ungültig! (Format: 12,34 ohne Tausenderpunkte)", "error");
-            return;
+            return; // Stoppt die Funktion hier
         }
-		else {
-            // Erfolg: Generiere Zufalls-ID für den Bot zum Auslesen
-            const randomID = Math.floor(Math.random() * 900000) + 100000;
-            showMsg(msg, "Reisekostenabrechnung " + randomID + " erfolgreich erstellt", "success");
-            
-            // Felder leeren für nächste Buchung
-            fields.forEach(id => document.getElementById(id).value = '');
-        }
+
+        // 4. Erfolg (wird nur erreicht, wenn alle Prüfungen oben bestanden wurden)
+        const randomID = Math.floor(Math.random() * 900000) + 100000;
+        showMsg(msg, "Reisekostenabrechnung " + randomID + " erfolgreich erstellt", "success");
+        
+        // Felder leeren für nächste Buchung
+        fields.forEach(id => document.getElementById(id).value = '');
     }
 
     function showMsg(el, txt, type) {
