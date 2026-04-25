@@ -64,8 +64,13 @@
         <option value="Taxi">Taxi</option>
     </select>
     
-    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Betrag (€)</label>
-    <input type="number" id="amount" step="0.01" placeholder="0,00">
+    <label style="font-size: 0.8em; font-weight: bold; color: #555;">Betrag</label>
+    <input type="text" id="amount" placeholder="z.B. 123,45">
+    <span class="hint">Format: 12,34 (Komma als Dezimaltrenner, keine Tausenderpunkte)</span>
+	
+	<label>Währung (ISO-Code)</label>
+    <input type="text" id="currency" placeholder="z.B. EUR">
+    <span class="hint">Nur "EUR" zulässig</span>
     
     <label style="font-size: 0.8em; font-weight: bold; color: #555;">Beleg-Referenz</label>
     <input type="text" id="invoiceRef" placeholder="RE-2026-XXXX">
@@ -120,14 +125,30 @@
     // Buchungslogik
     function processBooking() {
         const msg = document.getElementById('statusMessage');
-        const fields = ['employee', 'costCenter', 'category', 'amount', 'invoiceRef'];
+        const fields = ['employee', 'costCenter', 'category', 'amount', "currency", 'invoiceRef'];
         
         // Prüfung auf Vollständigkeit
         const allFilled = fields.every(id => document.getElementById(id).value.trim() !== "");
 
         if (!allFilled) {
             showMsg(msg, "ACHTUNG: Buchung unvollständig. Alle Felder sind Pflicht!", "error");
-        } else {
+			return;
+        } 
+		
+		// 2. Prüfung Währung (Nur EUR)
+        if (curr !== "EUR") {
+            showMsg(msg, "Fehler: Das System akzeptiert nur die Währung EUR!", "error");
+            return;
+        }
+
+        // 3. Prüfung Betrag (Deutsches Format: Zahlen, genau ein Komma optional, keine Punkte)
+        // RegEx: Erlaubt Ziffern, optional ein Komma gefolgt von Ziffern. Keine Punkte erlaubt.
+        const germanFormatRegex = /^\d+(,\d{1,2})?$/;
+        if (!germanFormatRegex.test(amt)) {
+            showMsg(msg, "Fehler: Betrag ungültig! (Format: 12,34 ohne Tausenderpunkte)", "error");
+            return;
+        }
+		else {
             // Erfolg: Generiere Zufalls-ID für den Bot zum Auslesen
             const randomID = Math.floor(Math.random() * 900000) + 100000;
             showMsg(msg, "Reisekostenabrechnung " + randomID + " erfolgreich erstellt", "success");
